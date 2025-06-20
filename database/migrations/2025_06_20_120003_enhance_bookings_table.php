@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::table('bookings', function (Blueprint $table) {
             // Add Google Places API related fields for booking location
-            $table->string('place_id')->nullable()->after('location');
-            $table->decimal('latitude', 10, 8)->nullable()->after('place_id');
-            $table->decimal('longitude', 11, 8)->nullable()->after('latitude');
-            $table->string('formatted_address')->nullable()->after('longitude');
+            $table->string("place_id")->nullable()->after("total_amount");
+            $table->decimal("latitude", 10, 8)->nullable()->after("place_id");
+            $table->decimal("longitude", 11, 8)->nullable()->after("latitude");
+            $table->string("formatted_address")->nullable()->after("longitude");
             
             // Add payment and booking enhancement fields
             $table->decimal('hourly_rate', 8, 2)->nullable()->after('total_amount');
