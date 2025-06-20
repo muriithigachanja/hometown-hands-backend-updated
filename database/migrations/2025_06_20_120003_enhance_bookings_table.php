@@ -21,9 +21,8 @@ return new class extends Migration
             // Add payment and booking enhancement fields
             $table->decimal('hourly_rate', 8, 2)->nullable()->after('total_amount');
             $table->integer('duration_hours')->nullable()->after('hourly_rate');
-            $table->json('care_requirements')->nullable()->after('duration_hours');
-            $table->text('special_instructions')->nullable()->after('care_requirements');
-            $table->string('payment_status')->default('pending')->after('special_instructions');
+            $table->json("care_requirements")->nullable()->after("duration_hours");
+            $table->string("payment_status")->default("pending")->after("care_requirements");
             $table->string('payment_method')->nullable()->after('payment_status');
             $table->string('payment_transaction_id')->nullable()->after('payment_method');
             $table->timestamp('confirmed_at')->nullable()->after('payment_transaction_id');
@@ -46,9 +45,8 @@ return new class extends Migration
                 'formatted_address',
                 'hourly_rate',
                 'duration_hours',
-                'care_requirements',
-                'special_instructions',
-                'payment_status',
+                "care_requirements",
+                "payment_status",
                 'payment_method',
                 'payment_transaction_id',
                 'confirmed_at',
