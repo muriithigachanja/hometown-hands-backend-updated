@@ -16,8 +16,12 @@ return new class extends Migration
             $table->enum('role', ['user', 'admin'])->default('user')->after('user_type');
             $table->boolean('is_active')->default(true)->after('role');
             $table->timestamp('last_login_at')->nullable()->after('is_active');
-            $table->string('profile_image')->nullable()->after('last_login_at');
-            $table->text('notes')->nullable()->after('profile_image'); // Admin notes
+            if (!Schema::hasColumn("users", "profile_image")) {
+                $table->string("profile_image")->nullable()->after("last_login_at");
+            }
+            if (!Schema::hasColumn("users", "notes")) {
+                $table->text("notes")->nullable()->after("profile_image"); // Admin notes
+            }
         });
     }
 
