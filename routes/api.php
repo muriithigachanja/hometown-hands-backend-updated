@@ -34,6 +34,7 @@ Route::get('/health', function () {
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/create-admin', [AuthController::class, 'createAdminUser']); // For initial setup
     
     // Protected auth routes
     Route::middleware('auth:sanctum')->group(function () {

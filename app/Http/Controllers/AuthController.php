@@ -87,6 +87,7 @@ class AuthController extends Controller
                 'lastName' => $user->last_name,
                 'email' => $user->email,
                 'userType' => $user->user_type,
+                'role' => $user->role ?? 'user',
                 'phone' => $user->phone,
                 'createdAt' => $user->created_at
             ],
@@ -252,6 +253,51 @@ class AuthController extends Controller
                 'careSeekerProfile' => $user->careSeekerProfile
             ]
         ], 200);
+    }
+}
+
+
+    
+    /**
+     * Create admin user if it doesn't exist
+     */
+    public function createAdminUser()
+    {
+        $adminEmail = 'admin@hometownhands.com';
+        
+        // Check if admin user already exists
+        $existingAdmin = User::where('email', $adminEmail)->first();
+        
+        if ($existingAdmin) {
+            return response()->json([
+                'message' => 'Admin user already exists',
+                'admin' => [
+                    'email' => $existingAdmin->email,
+                    'role' => $existingAdmin->role
+                ]
+            ], 200);
+        }
+        
+        // Create admin user
+        $admin = User::create([
+            'first_name' => 'Admin',
+            'last_name' => 'User',
+            'email' => $adminEmail,
+            'phone' => '+1234567890',
+            'password' => Hash::make('admin123'),
+            'user_type' => 'admin',
+            'role' => 'admin',
+            'email_verified_at' => now()
+        ]);
+        
+        return response()->json([
+            'message' => 'Admin user created successfully',
+            'admin' => [
+                'id' => $admin->id,
+                'email' => $admin->email,
+                'role' => $admin->role
+            ]
+        ], 201);
     }
 }
 

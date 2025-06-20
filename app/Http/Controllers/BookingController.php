@@ -12,6 +12,111 @@ use Carbon\Carbon;
 
 class BookingController extends Controller
 {
+    public function getBookings(Request $request)
+    {
+        $user = $request->user();
+        
+        $query = Booking::with(['careSeeker', 'caregiver']);
+        
+        // Get bookings based on user type
+        if ($user->user_type === 'caregiver') {
+            $query->where('caregiver_id', $user->id);
+        } else {
+            $query->where('care_seeker_id', $user->id);
+        }
+
+        $bookings = $query->orderBy('created_at', 'desc')->get();
+
+        // Transform the data to match frontend expectations
+        $transformedBookings = $bookings->map(function ($booking) {
+            return [
+                'id' => $booking->id,
+                'careSeekerId' => $booking->care_seeker_id,
+                'caregiverId' => $booking->caregiver_id,
+                'date' => $booking->date,
+                'time' => $booking->start_time,
+                'duration' => $booking->duration_hours ?? 1,
+                'careType' => $booking->care_type ?? 'General Care',
+                'status' => $booking->status,
+                'totalAmount' => $booking->total_amount,
+                'specialRequests' => $booking->special_instructions
+            ];
+        });
+
+        return response()->json([
+            'bookings' => $transformedBookings
+        ], 200);
+    }
+
+    public function updateBooking(Request $request, $id)
+    {
+        $booking = Booking::find($id);
+        if (!$booking) {
+            return response()->json(['error' => 'Booking not found'], 404);
+        }
+
+        // Validate user can update this booking
+        $user = $request->user();
+        if ($booking->care_seeker_id !== $user->id && $booking->caregiver_id !== $user->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'date' => 'sometimes|date',
+            'start_time' => 'sometimes|date_format:H:i',
+            'end_time' => 'sometimes|date_format:H:i',
+            'special_instructions' => 'sometimes|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $booking->update($request->only(['date', 'start_time', 'end_time', 'special_instructions']));
+
+        return response()->json([
+            'message' => 'Booking updated successfully',
+            'booking' => $booking
+        ], 200);
+    }
+
+    public function cancelBooking(Request $request, $id)
+    {
+        $booking = Booking::find($id);
+        if (!$booking) {
+            return response()->json(['error' => 'Booking not found'], 404);
+        }
+
+        // Validate user can cancel this booking
+        $user = $request->user();
+        if ($booking->care_seeker_id !== $user->id && $booking->caregiver_id !== $user->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $booking->update([
+            'status' => 'cancelled',
+            'cancelled_at' => now(),
+            'cancellation_reason' => $request->reason
+        ]);
+
+        return response()->json([
+            'message' => 'Booking cancelled successfully',
+            'booking' => $booking
+        ], 200);
+    }
+
+    public function getCaregiverReviews($caregiverId)
+    {
+        $reviews = Review::where('reviewed_user_id', $caregiverId)
+            ->with('reviewer')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'reviews' => $reviews
+        ], 200);
+    }
+
     public function createBooking(Request $request)
     {
         $validator = Validator::make($request->all(), [
