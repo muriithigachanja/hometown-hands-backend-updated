@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 
 class Testimonial extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUlids;
 
     protected $fillable = [
         'name',
@@ -25,6 +26,9 @@ class Testimonial extends Model
         'featured' => 'boolean',
         'active' => 'boolean'
     ];
+
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     public function scopeFeatured($query)
     {

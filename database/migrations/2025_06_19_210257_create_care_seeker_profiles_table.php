@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('care_seeker_profiles', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->ulid('id')->primary();
+            $table->ulid('user_id')->constrained()->onDelete('cascade');
             $table->string('recipient_name');
             $table->integer('recipient_age')->nullable();
             $table->text('recipient_condition')->nullable();

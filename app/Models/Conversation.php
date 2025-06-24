@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 
 class Conversation extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUlids;
 
     protected $fillable = [
         'user1_id',
@@ -18,6 +19,9 @@ class Conversation extends Model
     protected $casts = [
         'last_message_at' => 'datetime'
     ];
+
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     public function user1()
     {

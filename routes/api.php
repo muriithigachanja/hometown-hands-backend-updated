@@ -30,10 +30,16 @@ Route::get('/health', function () {
     ]);
 });
 
+// Test route for debugging
+Route::post('/test-login', [AuthController::class, 'login']);
+
+// Direct login route (working)
+Route::post('/auth/login', [AuthController::class, 'login']);
+
 // Authentication routes (public)
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
+    // Route::post('/login', [AuthController::class, 'login']); // Moved outside group
     Route::post('/create-admin', [AuthController::class, 'createAdminUser']); // For initial setup
     
     // Protected auth routes
@@ -137,9 +143,8 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     // Caregiver Management
     Route::prefix('caregivers')->group(function () {
         Route::get('/', [App\Http\Controllers\AdminController::class, 'getCaregivers']);
-        Route::put('/{id}/approve', [App\Http\Controllers\AdminController::class, 'approveCaregiverProfile']);
-        Route::put('/{id}/reject', [App\Http\Controllers\AdminController::class, 'rejectCaregiverProfile']);
-        Route::put('/{id}/verify', [App\Http\Controllers\AdminController::class, 'verifyCaregiverProfile']);
+        Route::get('/{id}', [App\Http\Controllers\AdminController::class, 'getCaregiverDetails']);
+        Route::put('/{id}/status', [App\Http\Controllers\AdminController::class, 'updateCaregiverStatus']);
     });
     
     // Booking Management

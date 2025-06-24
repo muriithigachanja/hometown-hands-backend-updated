@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('care_requests', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('care_seeker_id')->constrained('users')->onDelete('cascade');
+            $table->ulid('id')->primary();
+            $table->ulid('care_seeker_id')->constrained('users')->onDelete('cascade');
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('service_type')->nullable();

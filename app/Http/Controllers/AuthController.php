@@ -58,41 +58,45 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|string'
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email',
+                'password' => 'required|string'
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
+            }
+
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                return response()->json(['error' => 'Invalid credentials'], 401);
+            }
+
+            // Create token
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'message' => 'Login successful',
+                'user' => [
+                    'id' => $user->id,
+                    'firstName' => $user->first_name,
+                    'lastName' => $user->last_name,
+                    'email' => $user->email,
+                    'userType' => $user->user_type,
+                    'role' => $user->role ?? 'user',
+                    'phone' => $user->phone,
+                    'createdAt' => $user->created_at
+                ],
+                'token' => $token
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Login failed',
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['error' => 'Invalid credentials'], 401);
-        }
-
-        // Create token
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        // Update last login
-        $user->updateLastLogin();
-
-        return response()->json([
-            'message' => 'Login successful',
-            'user' => [
-                'id' => $user->id,
-                'firstName' => $user->first_name,
-                'lastName' => $user->last_name,
-                'email' => $user->email,
-                'userType' => $user->user_type,
-                'role' => $user->role ?? 'user',
-                'phone' => $user->phone,
-                'createdAt' => $user->created_at
-            ],
-            'token' => $token
-        ], 200);
     }
 
     public function logout(Request $request)
@@ -254,10 +258,7 @@ class AuthController extends Controller
             ]
         ], 200);
     }
-}
 
-
-    
     /**
      * Create admin user if it doesn't exist
      */
