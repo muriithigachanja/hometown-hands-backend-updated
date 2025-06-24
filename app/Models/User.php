@@ -26,7 +26,7 @@ class User extends Authenticatable
         'profile_image',
         'notes',
         'email_verified_at',
-        'uuid'
+        'id'
     ];
 
     protected $hidden = [
@@ -52,8 +52,8 @@ class User extends Authenticatable
         parent::boot();
         
         static::creating(function ($model) {
-            if (empty($model->uuid)) {
-                $model->uuid = (string) Str::uuid();
+            if (empty($model->id)) {
+                $model->id = (string) Str::id();
             }
         });
     }
@@ -63,7 +63,7 @@ class User extends Authenticatable
      */
     public function getRouteKeyName()
     {
-        return 'uuid';
+        return 'id';
     }
 
     // Relationships

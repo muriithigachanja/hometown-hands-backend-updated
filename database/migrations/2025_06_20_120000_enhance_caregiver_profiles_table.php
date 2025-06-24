@@ -20,7 +20,6 @@ return new class extends Migration
             
             // Add additional profile fields for enhanced functionality
             $table->text('bio')->nullable()->after('experience');
-            $table->json('specialties')->nullable()->after('bio');
             $table->boolean('background_check')->default(false)->after('verification_status');
             $table->boolean('verified')->default(false)->after('background_check');
             $table->string('profile_image')->nullable()->after('verified');
@@ -42,7 +41,6 @@ return new class extends Migration
                 'longitude',
                 'formatted_address',
                 'bio',
-                'specialties',
                 'background_check',
                 'verified',
                 'profile_image',
