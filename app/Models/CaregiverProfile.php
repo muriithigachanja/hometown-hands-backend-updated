@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 
 class CaregiverProfile extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUlids;
 
     protected $fillable = [
         'user_id',
@@ -38,7 +39,11 @@ class CaregiverProfile extends Model
         'education',
         'active',
         'rating',
-        'review_count'
+        'review_count',
+        'status',
+        'admin_notes',
+        'approved_at',
+        'approved_by'
     ];
 
     protected $casts = [
@@ -58,6 +63,9 @@ class CaregiverProfile extends Model
         'verified' => 'boolean',
         'active' => 'boolean'
     ];
+
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     // Relationships
     public function user()

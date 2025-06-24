@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasUlids;
 
     protected $fillable = [
         'first_name',
@@ -23,7 +25,8 @@ class User extends Authenticatable
         'last_login_at',
         'profile_image',
         'notes',
-        'email_verified_at'
+        'email_verified_at',
+        'uuid'
     ];
 
     protected $hidden = [
@@ -37,6 +40,31 @@ class User extends Authenticatable
         'password' => 'hashed',
         'is_active' => 'boolean'
     ];
+
+    protected $keyType = 'string';
+    public $incrementing = false;
+
+    /**
+     * Boot function to automatically generate UUID
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) Str::uuid();
+            }
+        });
+    }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
 
     // Relationships
     public function caregiverProfile()

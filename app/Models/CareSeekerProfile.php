@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 
 class CareSeekerProfile extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUlids;
 
     protected $fillable = [
         'user_id',
@@ -45,6 +46,9 @@ class CareSeekerProfile extends Model
         'active' => 'boolean'
     ];
 
+    protected $keyType = 'string';
+    public $incrementing = false;
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -64,7 +68,7 @@ class CareSeekerProfile extends Model
 // CareRequest Model
 class CareRequest extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUlids;
 
     protected $fillable = [
         'care_seeker_id',
@@ -80,6 +84,9 @@ class CareRequest extends Model
     protected $casts = [
         'schedule' => 'array'
     ];
+
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     public function careSeeker()
     {
@@ -100,7 +107,7 @@ class CareRequest extends Model
 // Message Model
 class Message extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUlids;
 
     protected $fillable = [
         'sender_id',
@@ -112,6 +119,9 @@ class Message extends Model
     protected $casts = [
         'read' => 'boolean'
     ];
+
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     public function sender()
     {
@@ -141,7 +151,7 @@ class Message extends Model
 // Booking Model
 class Booking extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUlids;
 
     protected $fillable = [
         'care_seeker_id',
@@ -162,6 +172,9 @@ class Booking extends Model
         'end_time' => 'datetime:H:i',
         'total_amount' => 'decimal:2'
     ];
+
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     public function careSeeker()
     {
@@ -192,7 +205,7 @@ class Booking extends Model
 // Review Model
 class Review extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUlids;
 
     protected $fillable = [
         'reviewer_id',
@@ -201,6 +214,9 @@ class Review extends Model
         'rating',
         'comment'
     ];
+
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     public function reviewer()
     {
